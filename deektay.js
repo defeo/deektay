@@ -159,7 +159,7 @@ class Deektay {
 			     htok.map(x => x.token));
 
 	for (let [ai, hi] of diff) {
-	    atok[ai].good = htok[ai].good = true;
+	    atok[ai].good = htok[hi].good = true;
 	}
 	
 	return {
