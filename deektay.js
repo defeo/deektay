@@ -1,10 +1,8 @@
-export class Deektay {
-    constructor(source, type='guess', lang='en', element='body') {
+class Deektay {
+    constructor(source, { type='guess', lang='fr', element='body' }) {
 	this.lang = Deektay.trans[lang];
 	if (!this.lang)
 	    throw new Error('Unknown language ' + lang);
-	
-	this.source = source;
 	
 	this.type = type == 'guess'
 	    ? (source.endsWith('.json')
@@ -22,16 +20,22 @@ export class Deektay {
 	if (!this.root)
 	    throw new Error('Cannot find element ' + element);
 	
+	this.clips = null;
 	this.current = 0;
-    }
     
+	this.xhr = new XMLHttpRequest();
+	this.xhr.open('get', source);
+	this.xhr.responseType = this.type == 'txt' ? 'text': 'json';
+	this.xhr.onload = (e) => {
+ 	    this.clips = this.type == 'txt'
+		? this.parse_text(this.xhr.response)
+		: this.xhr.response;
+	    this.activate();
+	}
+    }
+
     start() {
-	return fetch(this.source)
-	    .then(s => this.type == 'txt'
-		  ? s.text().then(d => this.parse_text(d))
-		  : s.json())
-	    .then(d => this.clips = d)
-	    .then(() => this.activate());
+	this.xhr.send();
     }
     
     parse_text(text) {
@@ -40,10 +44,15 @@ export class Deektay {
 	    .forEach((line) => {
 		let s = line.split(/:\s+/);
 		if (s.length > 1 && s[0]) {
-		    data.push({
-			media: s[0],
-			sentence: s.slice(1).join(': '),
-		    });
+		    let sent = s.slice(1).join(': ');
+		    if (!s[0].trim()) {
+			data[data.length-1].sentence.push(sent);
+		    } else {
+			data.push({
+			    media: s[0].split(','),
+			    sentence: [sent],
+			});
+		    }
 		} else {
 		    console.warn('Discarded line:', line);
 		}
@@ -68,10 +77,35 @@ export class Deektay {
 	this.check.addEventListener('click', () => {
 	    let sntc = document.querySelector('.sentence.active');
 	    let answ = sntc.querySelector('.answer');
-	    let corr = this.check_answer(answ.innerText, answ.dataset.hint);
 	    let hint = sntc.querySelector('.hint');
-	    hint.innerHTML = corr.hint;
-	    hint.classList.add(corr.right ? 'right' : 'wrong');
+
+	    let answ_t = answ.innerText;
+	    
+	    let corr = JSON.parse(answ.dataset.hints).map(h => ({
+		hint: h,
+		corr: this.check_answer(answ_t, h),
+	    })).reduce((a, b) => a.errors < b.errors ? a : b);
+	    console.log(corr);
+	    
+	    let gen_diff = (tokens, orig) => {
+		let cur = 0;
+		let str = "";
+		for (let t of tokens) {
+		    if (t.index > cur)
+			str += orig.substring(cur, t.index);
+		    cur = t.index + t.length;
+		    str += `<span class="${t.good?'right':'wrong'}">${orig.substring(t.index,cur)}</span>`;
+		}
+		return str;
+	    }
+	    let answ_str = gen_diff(corr.corr.a_tokens, answ_t);
+	    let hint_str = gen_diff(corr.corr.h_tokens, corr.hint);
+
+	    console.log(answ_str, hint_str);
+	    
+	    answ.innerHTML = answ_str;
+	    hint.innerHTML = hint_str;
+	    hint.classList.add(corr.corr.errors == 0 ? 'right' : 'wrong');
 	    
 	    this.render_next();
 	});
@@ -100,9 +134,11 @@ export class Deektay {
 	    this.sentences.innerHTML += Deektay.sentence;
 	    let sntc = this.sentences.lastChild;
 	    let audio = sntc.querySelector('audio');
-	    audio.src = next.media;
+	    for (let m of next.media) {
+		audio.innerHTML += `<source src="${m}">`
+	    }
 	    let answer = sntc.querySelector('.answer');
-	    answer.dataset.hint = next.sentence;
+	    answer.dataset.hints = JSON.stringify(next.sentence);
 	    let play = sntc.querySelector('.play');
 	    play.addEventListener('click', () => {
 		audio.play();
@@ -117,12 +153,57 @@ export class Deektay {
     }
 
     check_answer(answer, hint) {
+	let atok = this.tokenize(answer),
+	    htok = this.tokenize(hint);
+	let diff = this.diff(atok.map(x => x.token),
+			     htok.map(x => x.token));
+
+	for (let [ai, hi] of diff) {
+	    atok[ai].good = htok[ai].good = true;
+	}
+	
 	return {
-	    right: answer == hint,
-	    hint: hint,
+	    errors: htok.length - diff.length,
+	    a_tokens: atok,
+	    h_tokens: htok,
 	};
     }
 
+    diff(A, B) {
+	let n = A.length+1, m = B.length+1;
+	let tab = new Uint32Array(n * m);
+	for (let i = 1; i < n; i++) {
+	    for (let j = 1; j < m; j++) {
+		let tl = tab[i-1 + n*(j-1)] & ~3,
+		    l  = tab[i   + n*(j-1)] & ~3,
+		    t  = tab[i-1 + n*j    ] & ~3;
+		if (A[i-1] == B[j-1]) {
+		    tab[i + n*j] = tl + 4 | 0;
+		} else {
+		    if (t > l) 
+			tab[i + n*j] = t | 1;
+		    else if (t == l)
+			tab[i + n*j] = t | 3;
+		    else
+			tab[i + n*j] = l | 2;
+		}
+	    }
+	}
+
+	let seq = [];
+	for (let i = n-1, j = m-1; i > 0 && j > 0; ) {
+	    if (tab[i + n*j] & 1) {
+		i--;
+	    } else if (tab[i + n*j] & 2) {
+		j--;
+	    } else {
+		seq.push([i-1, j-1]);
+		i--; j--;
+	    }
+	}
+	return seq;
+    }
+    
     tokenize(sentence, lower=false) {
 	let seps = /\s+|([.,;:!?"'\-\(\)\[\]¿¡–—―«»<>‘’…]+)/g;
 	let tokens = [];
@@ -146,6 +227,16 @@ export class Deektay {
 	    }
 	    ind = match.index + match[0].length;
 	}
+
+	if (ind < sentence.length) {
+	    let tok = this.normalize(sentence.substring(ind, sentence.length), lower);
+	    tokens.push({
+		token: tok,
+		index: ind,
+		length: tok.length,
+	    });
+	}
+	
 	return tokens;
     }
 
@@ -189,8 +280,9 @@ Deektay.stylesheet = `
 .sentence { pointer-events: none; }
 .sentence.active { pointer-events: auto; }
 .answer { height: 1em; }
-.right { color: green; }
-.wrong { color: red; }
+.hint.right { outline: solid thin green; }
+.hint.wrong { outline: solid thin red; }
+span.wrong { background-color: red; color: white; }
 `;
 
 Deektay.trans = {
@@ -203,7 +295,7 @@ Deektay.trans = {
     },
     'fr': {
 	'skip': 'passer',
-	'check': 'controler',
+	'check': 'contrôler',
 	'error': 'erreur',
 	'errors': 'erreurs',
 	'noerr': "pas d'erreurs",
