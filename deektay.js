@@ -112,7 +112,6 @@ class Deektay {
 	    this.render_next();
 	});
 	this.sentences.addEventListener('keyup', (e) => {
-	    console.log(e, e.target.parentNode);
 	    if (e.target.classList.contains('answer')
 		&& e.target.parentNode.classList.contains('active')) {
 		this.check.disabled = e.target.innerText.trim() === '';

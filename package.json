@@ -1,0 +1,16 @@
+{
+  "name": "deektay",
+  "version": "1.0.0",
+  "description": "A browser based dictation app",
+  "main": "deektay.js",
+  "scripts": {
+    "minify": "./node_modules/.bin/babel deektay.js > deektay_min.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.0"
+  }
+}
