@@ -2,6 +2,6 @@
 1.aac: Deektay is a self-assessed dictation app.
 2.aac: It is very simple to use,
 3.aac: if you know a tiny little bit about web hosting.
-4.aac: For more info, go over to
+4.aac: For more info, go to
 5.aac: https://github.com/defeo/deektay
 6.aac: Thank you!
