@@ -1,0 +1,98 @@
+/* Resets and generics */
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    max-width: 800px;
+    margin: auto;
+}
+
+h1, h2, h3 {
+    margin: 8px 0;
+}
+h4, h5, h6, p {
+    margin: 4px 0;
+}
+
+/* Deektay layout */
+#sentences {
+    margin-top: 1em;
+}
+
+button {
+    background-color: inherit;
+    border: solid thin #aaf;
+    color: #33f;
+    padding: 3px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+button[disabled] {
+    color: #aaf;
+    cursor: default;
+}
+button:not([disabled]):hover {
+    border-color: blue;
+}
+
+.sentence {
+    pointer-events: none;
+}
+.sentence.active {
+    pointer-events: auto;
+}
+
+.sentence > div {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+}
+.play {
+    width: 6ex;
+}
+.hint {
+    flex: 1 1 auto;
+    padding: 0 1ex;
+    font-style: italic;
+    color: #444;
+}
+.answer {
+    margin-left: 6ex;
+    font-size: 110%;
+}
+.answer {
+    height: 1em;
+    border: solid thin #aaf;
+    padding: 1ex;
+}
+
+.answer.right {
+    background-color: #afa;
+}
+.answer.wrong {
+    background-color: #faa;
+}
+span.wrong {
+    background-color: #ff8;
+}
+
+
+#controls {
+    margin: 2ex 0;
+}
+.done #controls {
+    display: none;
+}
+.done #score {
+    border: solid thin gray;
+    border-radius: 10px;
+    margin: 2ex;
+    padding: 2ex;
+}
+.errcount {
+    font-weight: bold;
+    margin-top: 1ex;
+    text-align: center;
+}
