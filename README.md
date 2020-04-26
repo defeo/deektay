@@ -7,7 +7,7 @@ A dictation app.
 Dictation is a popular exercise in primary and middle schools in many
 countries, especially as France.
 
-Deektay is a single-page static web app for self-guided dictation
+Deektay is a single-page static web app for self-assessed dictation
 exercices.  Just drop a bunch of audio files in a folder, a `.txt`
 file, and an `index.html`, and Deektay generates the user interface.
 

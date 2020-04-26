@@ -5,14 +5,31 @@
     
     <title>Deektay</title>
 
-    <script src="deektay_min.js"></script>
-    <link href="deektay.css" rel="stylesheet">
+    <script src="https://defeo.lu/deektay/deektay_min.js"></script>
+    <link href="https://defeo.lu/deektay/deektay.css" rel="stylesheet">
+
+    <style>
+      footer {
+	  border-top: solid thin #aaa;
+	  margin-top: 1em;
+	  font-size: small;
+	  text-align: center;
+      }
+    </style>
   </head>
   <body>
+    <h1>Welcome to Deektay</h1>
+
+    <p>If you don't hear a sound, raise your volume and click on the
+    play (▶) button.</p>
+    
     <div id="dictee"></div>
     <script>
       var deektay = new Deektay('data.txt', { lang: 'fr', element: '#dictee' });
       deektay.start();
     </script>
+
+    <footer>Find out more
+    on <a href="https://github.com/defeo/deektay">GitHub</a>.</footer>
   </body>
 </html>
