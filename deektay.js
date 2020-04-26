@@ -21,6 +21,7 @@ class Deektay {
 	    throw new Error('Cannot find element ' + element);
 	
 	this.clips = null;
+	this.errors = { words: 0, sentences: 0 };
 	this.current = 0;
     
 	this.xhr = new XMLHttpRequest();
@@ -43,7 +44,7 @@ class Deektay {
 	text.split('\n')
 	    .forEach((line) => {
 		let s = line.split(/:\s+/);
-		if (s.length > 1 && s[0]) {
+		if (s.length > 1) {
 		    let sent = s.slice(1).join(': ');
 		    if (!s[0].trim()) {
 			data[data.length-1].sentence.push(sent);
@@ -61,20 +62,17 @@ class Deektay {
     }
 
     activate() {
-	let css = document.createElement('style');
-	css.innerText = Deektay.stylesheet;
-	document.head.append(css);
-	
 	this.root.innerHTML = Deektay.main;
 	this.sentences = this.root.querySelector('#sentences');
 	this.check = this.root.querySelector('#check');
-	this.check.innerText = this.lang.check;
+	this.check.innerText = this.capitalize(this.lang.check);
 	this.skip = this.root.querySelector('#skip');
-	this.skip.innerText = this.lang.skip;
+	this.skip.innerText = this.capitalize(this.lang.skip);
 	this.score = this.root.querySelector('#score');
 	this.controls = this.root.querySelector('#controls');
 
 	this.check.addEventListener('click', () => {
+	    this.check.disabled = true;
 	    let sntc = document.querySelector('.sentence.active');
 	    let answ = sntc.querySelector('.answer');
 	    let hint = sntc.querySelector('.hint');
@@ -84,8 +82,7 @@ class Deektay {
 	    let corr = JSON.parse(answ.dataset.hints).map(h => ({
 		hint: h,
 		corr: this.check_answer(answ_t, h),
-	    })).reduce((a, b) => a.errors < b.errors ? a : b);
-	    console.log(corr);
+	    })).reduce((a, b) => a.corr.errors < b.corr.errors ? a : b);
 	    
 	    let gen_diff = (tokens, orig) => {
 		let cur = 0;
@@ -101,11 +98,13 @@ class Deektay {
 	    let answ_str = gen_diff(corr.corr.a_tokens, answ_t);
 	    let hint_str = gen_diff(corr.corr.h_tokens, corr.hint);
 
-	    console.log(answ_str, hint_str);
-	    
 	    answ.innerHTML = answ_str;
+	    answ.classList.add(corr.corr.errors == 0 ? 'right' : 'wrong');
 	    hint.innerHTML = hint_str;
 	    hint.classList.add(corr.corr.errors == 0 ? 'right' : 'wrong');
+
+	    this.errors.words += corr.corr.errors;
+	    this.errors.sentences += !(corr.corr.errors == 0);
 	    
 	    this.render_next();
 	});
@@ -116,7 +115,7 @@ class Deektay {
 	    console.log(e, e.target.parentNode);
 	    if (e.target.classList.contains('answer')
 		&& e.target.parentNode.classList.contains('active')) {
-		this.check.disabled = e.target.innerText === '';
+		this.check.disabled = e.target.innerText.trim() === '';
 	    }
 	});
 
@@ -146,10 +145,18 @@ class Deektay {
 	    });
 	    play.dispatchEvent(new Event('click'));
 	} else {
-	    this.controls.classList.add('done');
+	    this.root.classList.add('done');
 	    for (let c of this.clips)
-		this.score.innerHTML += '<p>' + c.sentence + '</p>';
+		this.score.innerHTML += `<p>${c.sentence[0]}</p>`;
+
+	    let err = this.errors.words == 0
+		? this.capitalize(this.lang.noerr) + '!'
+		: this.errors.words == 1
+		? `1 ${this.lang.error}`
+		: `${this.errors.words} ${this.lang.errors}`;
+	    this.score.innerHTML += `<p class="errcount">${err}</p>`;
 	}
+	window.scrollTo(0,document.body.scrollHeight);
     }
 
     check_answer(answer, hint) {
@@ -204,7 +211,7 @@ class Deektay {
 	return seq;
     }
     
-    tokenize(sentence, lower=false) {
+    tokenize(sentence, lower=true) {
 	let seps = /\s+|([.,;:!?"'\-\(\)\[\]¿¡–—―«»<>‘’…]+)/g;
 	let tokens = [];
 	let ind = 0;
@@ -259,6 +266,10 @@ class Deektay {
 	}
 	return token;
     }
+
+    capitalize(s) {
+	return s.charAt(0).toUpperCase() + s.substring(1, s.length);
+    }
 }
 
 Deektay.main = `<div id="sentences"></div>
@@ -269,21 +280,13 @@ Deektay.main = `<div id="sentences"></div>
 </div>`;
 
 Deektay.sentence = `<div class="sentence active">
-  <button class="play">&gt;</button>
-  <audio style="display:none"></audio>
-  <p class="hint"></p>
+  <div>
+    <button class="play">▶</button>
+    <p class="hint"></p>
+    <audio style="display:none"></audio>
+  </div>
   <p class="answer" contentEditable="true"></p>
 </div>`;
-
-Deektay.stylesheet = `
-#controls.done { display: none; }
-.sentence { pointer-events: none; }
-.sentence.active { pointer-events: auto; }
-.answer { height: 1em; }
-.hint.right { outline: solid thin green; }
-.hint.wrong { outline: solid thin red; }
-span.wrong { background-color: red; color: white; }
-`;
 
 Deektay.trans = {
     'en': {
