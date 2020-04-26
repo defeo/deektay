@@ -2,12 +2,21 @@
 <html>
   <head>
     <meta charset="utf-8">
-    
-    <title>Deektay</title>
 
+    <!-- Do not forget to customize the title and description -->
+    <title>Deektay</title>
+    <meta name="description" content="A dictation app.">
+
+    <!-- For mobile browsers, you probably don't want to change this -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- If you prefer, you can host these two files locally -->
     <script src="https://defeo.lu/deektay/deektay_min.js"></script>
     <link href="https://defeo.lu/deektay/deektay.css" rel="stylesheet">
 
+    <!-- Deektay tries to be very minimal in the way of appearance.
+	 Apply any style customization here. -->
     <style>
       footer {
 	  border-top: solid thin #aaa;
@@ -18,17 +27,21 @@
     </style>
   </head>
   <body>
+    <!-- This is your web page. Write whatever HTML you like here -->
     <h1>Welcome to Deektay</h1>
 
     <p>If you don't hear a sound, raise your volume and click on the
     play (▶) button.</p>
-    
-    <div id="dictee"></div>
+
+    <!-- This is where deektay loads. 
+	 Read instructions at https://github.com/defeo/deektay. -->
+    <div id="deektay"></div>
     <script>
-      var deektay = new Deektay('data.txt', { lang: 'fr', element: '#dictee' });
+      var deektay = new Deektay('data.txt', { lang: 'en' });
       deektay.start();
     </script>
 
+    <!-- More custom HTML -->
     <footer>Find out more
     on <a href="https://github.com/defeo/deektay">GitHub</a>.</footer>
   </body>

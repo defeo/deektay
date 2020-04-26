@@ -110,3 +110,73 @@ Here's a quick table of format support:
 
 For more information, see [this Wikipedia
 page](https://en.wikipedia.org/wiki/HTML5_audio#Supported_audio_coding_formats).
+
+
+## Configuring, language
+
+The standard way to load Deektay is:
+
+```js
+var deektay = new Deektay('data.txt', { 
+    lang: 'fr',
+    element: '#deektay',
+    type: 'guess',
+	check_caps: false,
+});
+deektay.start()
+```
+
+See for example, [docs/index.html](docs/index.html).
+
+A few options can be configured:
+
+- The data file can be named aything you want. Just change
+  `'data.txt'` to the correct file name.
+
+- `lang` indicates the language of the user interface. Current choices
+  are `'en'`, `'fr'`, and `'it'`. Default is `fr`.
+  
+  If you would like to see another language supported, please open an
+  [issue](issues).
+  
+- `element` indicates the tag where Deektay should insert
+  itself. Default is `'#deektay'`.
+
+- `type` is the type of `data.txt`. Choices are: `text` for text file,
+  `json` for Json files, and `guess` (default) which guesses based on
+  the file extension.
+  
+  The text format is documented above. The json format is
+  
+  ```js
+  [
+    {
+      media: ['file1.ogg', 'file1.mp3', 'file1.aac'],
+      sentence: [
+        'The sky above the port was the color of television',
+        'The sky above the port was the colour of television',
+      ],
+    },
+  ]
+  ```
+  
+  If you don't understand what this means, you probably want to use
+  the text format.
+
+- `check_case` indicates whether Deektay matching should be
+  case-sensitive or not. Default is not.
+
+
+## Developers
+
+To generate the polyfilled minified file, first install Babel with
+
+```
+npm install
+```
+
+Then
+
+```
+npm run minify
+```
