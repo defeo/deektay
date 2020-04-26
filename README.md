@@ -75,10 +75,10 @@ It will thus only be useful to a rare breed of teachers:
    of files is missing, `<sentence>` is understood as an alternate
    spelling for the sentence on the previous line.
    
-   See also <docs/data.txt>.
+   See also [docs/data.txt](docs/data.txt).
    
 5. Also put an `index.html` file in the same folder. See
-   <docs/index.html> for an example.
+   [docs/index.html](docs/index.html) for an example.
    
 6. Upload the folder to a web server.
 
