@@ -212,7 +212,7 @@ class Deektay {
     }
     
     tokenize(sentence, lower=null) {
-	lower = (lower === null) ? lower : this.check_case;
+	lower = (lower !== null) ? lower : !this.check_case;
 	let seps = /\s+|([.,;:!?"'\-\(\)\[\]¿¡–—―«»<>‘’…]+)/g;
 	let tokens = [];
 	let ind = 0;
