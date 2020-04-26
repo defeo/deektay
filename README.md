@@ -131,7 +131,7 @@ A few options can be configured:
   are `'en'`, `'fr'`, and `'it'`. Default is `fr`.
   
   If you would like to see another language supported, please open an
-  [issue](/defeo/deektay/issues).
+  issue.
   
 - `element` indicates the tag where Deektay should insert
   itself. Default is `'#deektay'`.
