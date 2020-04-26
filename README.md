@@ -101,12 +101,12 @@ for the same sentence.
 
 Here's a quick table of format support:
 
-| | Chrome | Firefox | IE | Edge | Safari
-|-
-| aac | Yes | (Yes) | Yes | Yes | Yes
-| wav | Yes | Yes | No  | Yes | Yes
-| mp3 | Yes | >71 | Yes | Yes | Yes
-| ogg | Yes | Yes | No  | (No)| No
+| | Chrome | Firefox | IE | Edge | Safari|
+|-|--------|---------|----|------|-------|
+| aac | Yes | (Yes) | Yes | Yes | Yes|
+| wav | Yes | Yes | No  | Yes | Yes|
+| mp3 | Yes | >71 | Yes | Yes | Yes|
+| ogg | Yes | Yes | No  | (No)| No|
 
 For more information, see [this Wikipedia
 page](https://en.wikipedia.org/wiki/HTML5_audio#Supported_audio_coding_formats).
