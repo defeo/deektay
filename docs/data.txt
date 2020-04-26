@@ -1,7 +1,7 @@
-1.aac: Welcome to Deektay!
-2.aac: Deektay is a self-assessed dictation app.
-3.aac: It's very simple to use,
-4.aac: if you know a tiny little bit about web hosting.
-5.aac: For more info, go over to
-6.aac: https://github.com/defeo/deektay
-7.aac: Thank you!
+0.aac: Welcome to Deektay!
+1.aac: Deektay is a self-assessed dictation app.
+2.aac: It is very simple to use,
+3.aac: if you know a tiny little bit about web hosting.
+4.aac: For more info, go over to
+5.aac: https://github.com/defeo/deektay
+6.aac: Thank you!
