@@ -25,21 +25,15 @@ some advanced skills such as:
 It will thus only be useful to a rare breed of teachers:
 
 ```
-       ________   ______
-      /        \ /      \
-     /          x        \
-    /          / \        \
-   /   T      / D \        \
-  /    e     /  e  \     G  \
- /     a    /   e   \    e   \
-/      c   /    k    \   e    \
-\      h   \    t    /   k    /
- \     e    \   a   /    s   /
-  \    r     \  y  /        /
-   \   s      \   /        /
-    \          \ /        /
-     \          x        /
-      \________/ \______/
+┌────────────────────┐
+│     Language       │
+│     Teachers       │
+│        ┌───────────┤─────┐
+│        │  Deektay  │     │
+└────────┼───────────┘     │
+	 │      Computer   │
+	 │       Geeks     │
+         └─────────────────┘
 ```
 
 
@@ -137,7 +131,7 @@ A few options can be configured:
   are `'en'`, `'fr'`, and `'it'`. Default is `fr`.
   
   If you would like to see another language supported, please open an
-  [issue](issues).
+  [issue](/defeo/deektay/issues).
   
 - `element` indicates the tag where Deektay should insert
   itself. Default is `'#deektay'`.
