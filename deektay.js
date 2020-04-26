@@ -1,8 +1,9 @@
 class Deektay {
-    constructor(source, { type='guess', lang='fr', element='body' }) {
+    constructor(source, { type='guess', lang='fr', element='#deektay', check_case=false }) {
 	this.lang = Deektay.trans[lang];
 	if (!this.lang)
 	    throw new Error('Unknown language ' + lang);
+	this.check_case = check_case;
 	
 	this.type = type == 'guess'
 	    ? (source.endsWith('.json')
@@ -210,7 +211,8 @@ class Deektay {
 	return seq;
     }
     
-    tokenize(sentence, lower=true) {
+    tokenize(sentence, lower=null) {
+	lower = (lower === null) ? lower : this.check_case;
 	let seps = /\s+|([.,;:!?"'\-\(\)\[\]¿¡–—―«»<>‘’…]+)/g;
 	let tokens = [];
 	let ind = 0;
